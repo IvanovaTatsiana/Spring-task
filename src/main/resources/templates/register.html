@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head><title>Sign Up</title></head>
+<body>
+<div style="width:300px; margin:50px auto;">
+    <h2>Register</h2>
+    <p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+    <form th:action="@{/register}" th:object="${user}" method="post" autocomplete="off">
+        Username: <input type="text" th:field="*{username}" required><br><br>
+        Email: <input type="email" th:field="*{email}" required><br><br>
+        Password: <input type="password" th:field="*{password}" required autocomplete="new-password"><br><br>
+        <button type="submit">Register</button>
+    </form>
+    <p><a th:href="@{/login}">Back to Sign In</a></p>
+</div>
+</body>
+</html>

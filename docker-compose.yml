@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: shop-postgres-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: shop_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - shop-network
+
+  web-app:
+    build: .
+    container_name: shop-web-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+    networks:
+      - shop-network
+
+volumes:
+  postgres_data:
+
+networks:
+  shop-network:

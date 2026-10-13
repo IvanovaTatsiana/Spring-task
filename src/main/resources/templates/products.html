@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<head><title>Catalogue</title></head>
+<body>
+<div style="width:800px; margin:20px auto;">
+    <p>Welcome, <strong sec:authentication="name">User</strong>!
+        <a th:href="@{/orders}">My Orders</a> | <a th:href="@{/profile}">Profile</a> | <a th:href="@{/logout}">Sign Out</a></p>
+
+    <h2>Products Catalogue</h2>
+
+    <div sec:authorize="hasRole('ADMIN')">
+        <fieldset><legend>Admin Product Management</legend>
+            <form th:action="@{/products/add}" method="post">
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="text" name="description" placeholder="Description">
+                <input type="number" name="price" step="0.01" placeholder="Price" required>
+                <input type="number" name="quantity" placeholder="Qty" required>
+                <button type="submit">Create Asset</button>
+            </form>
+        </fieldset><br>
+    </div>
+
+    <table border="1" width="100%" cellpadding="5">
+        <tr><th>Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Action</th></tr>
+        <tr th:each="p : ${products}">
+            <td th:text="${p.name}">Product Name</td>
+            <td th:text="${p.description}">Description</td>
+            <td th:text="${'$' + p.price}">$0.00</td>
+            <td th:text="${p.quantity + ' units'}">0 units</td>
+            <td>
+                <form th:action="@{/orders/create}" method="post" style="display:inline;">
+                    <input type="hidden" name="productId" th:value="${p.id}">
+                    <input type="number" name="quantity" value="1" min="1" th:max="${p.quantity}" style="width:50px;">
+                    <button type="submit" th:disabled="${p.quantity <= 0}">Buy</button>
+                </form>
+                <form sec:authorize="hasRole('ADMIN')" th:action="@{/products/delete}" method="post" style="display:inline;">
+                    <input type="hidden" name="id" th:value="${p.id}"><button type="submit" style="color:red;">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table><br>
+    <div>
+        <a th:if="${currentPage > 1}" th:href="@{/products(page=${currentPage - 1})}">Previous</a>
+        <span th:text="${' Page ' + currentPage + ' of ' + totalPages + ' '}"> Page 1 of 1 </span>
+        <a th:if="${currentPage < totalPages}" th:href="@{/products(page=${currentPage + 1})}">Next</a>
+    </div>
+</div>
+</body>
+</html>

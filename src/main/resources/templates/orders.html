@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head><title>My Orders</title></head>
+<body>
+<div style="width:700px; margin:20px auto;">
+    <p><a th:href="@{/products}">Back to Catalog</a></p>
+    <h2>Your Purchase History</h2>
+    <p th:if="${param.error}" th:text="${param.error}" style="color:red;"></p>
+
+    <table border="1" width="100%" cellpadding="5">
+        <tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Total</th><th>Status</th><th>Action</th></tr>
+        <tr th:each="o : ${orders}">
+            <td th:text="${'#' + o.id}">#1</td>
+            <td th:text="${o.product.name}">Product Name</td>
+            <td th:text="${o.quantity}">0</td>
+            <td th:text="${'$' + o.totalPrice}">$0.00</td>
+            <td th:text="${o.status}">CREATED</td>
+            <td>
+                <form th:if="${o.status == 'CREATED'}" th:action="@{/orders/cancel}" method="post">
+                    <input type="hidden" name="id" th:value="${o.id}">
+                    <button type="submit">Cancel</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(orders)}">
+            <td colspan="6" style="text-align:center;">You haven't placed any orders yet.</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
