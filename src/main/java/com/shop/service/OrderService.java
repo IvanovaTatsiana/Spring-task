@@ -1,6 +1,5 @@
 package com.shop.service;
 
-import com.shop.exception.ResourceNotFoundException;
 import com.shop.model.Order;
 import com.shop.model.Product;
 import com.shop.model.User;
@@ -8,6 +7,7 @@ import com.shop.repository.OrderRepository;
 import com.shop.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class OrderService {
     public void createOrder(User user, Long productId, int qty) {
         if (qty <= 0) throw new IllegalArgumentException("Quantity must be positive");
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Requested product item was not found inside registry"));
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         if (qty > product.getQuantity()) throw new IllegalArgumentException("Insufficient stock");
 

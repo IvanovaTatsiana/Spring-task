@@ -4,7 +4,9 @@
 <body>
 <div style="width:800px; margin:20px auto;">
     <p>Welcome, <strong sec:authentication="name">User</strong>!
-        <a th:href="@{/orders}">My Orders</a> | <a th:href="@{/profile}">Profile</a> | <a th:href="@{/logout}">Sign Out</a></p>
+        <a th:href="@{/orders}">My Orders</a> | <a th:href="@{/profile}">Profile</a> | <form th:action="@{/logout}" method="post" style="display: inline;">
+    <button type="submit" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; padding: 0;">Sign Out</button>
+</form></p>
 
     <h2>Products Catalogue</h2>
 

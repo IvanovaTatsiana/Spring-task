@@ -1,28 +1,26 @@
 package com.shop.controller;
 
 import com.shop.model.Product;
-import com.shop.repository.ProductRepository;
+import com.shop.service.ProductService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/products")
 public class CatalogController {
-    private final ProductRepository productRepository;
+    private final ProductService productService;
     private static final int LIMIT = 5;
 
-    public CatalogController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public CatalogController(ProductService productService) {
+        this.productService = productService;
     }
 
     @GetMapping
     public String catalog(@RequestParam(name = "page", defaultValue = "1") int page, Model model) {
         if (page < 1) page = 1;
-        Page<Product> productPage = productRepository.findAll(PageRequest.of(page - 1, LIMIT));
+        Page<Product> productPage = productService.getPaginatedProducts(page - 1, LIMIT);
 
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
@@ -35,18 +33,13 @@ public class CatalogController {
                              @RequestParam("description") String description,
                              @RequestParam("price") double price,
                              @RequestParam("quantity") int quantity) {
-        Product p = new Product();
-        p.setName(name);
-        p.setDescription(description);
-        p.setPrice(BigDecimal.valueOf(price));
-        p.setQuantity(quantity);
-        productRepository.save(p);
+        productService.addProduct(name, description, price, quantity);
         return "redirect:/products";
     }
 
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam("id") Long id) {
-        productRepository.deleteById(id);
+        productService.deleteProduct(id);
         return "redirect:/products";
     }
 }

@@ -1,24 +1,23 @@
 package com.shop.controller;
 
 import com.shop.model.User;
-import com.shop.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.shop.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class AuthController {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/login")
-    public String login() { return "login"; }
+    public String login() {
+        return "login";
+    }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
@@ -28,13 +27,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, Model model) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+        if (userService.findByUsername(user.getUsername()).isPresent()) {
             model.addAttribute("error", "Username already exists");
             return "register";
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole("USER");
-        userRepository.save(user);
+        userService.registerNewUser(user);
         return "redirect:/login";
     }
 }
